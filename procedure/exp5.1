@@ -1,0 +1,45 @@
+SQL
+
+CREATE TABLE customer(
+    customer_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    city VARCHAR(50),
+    credits INT
+);
+
+
+
+INSERT INTO customer VALUES(1,'Athul','Malappuram',6000);
+INSERT INTO customer VALUES(2,'Rahul','Kottayam',3000);
+INSERT INTO customer VALUES(3,'Anu','Kochi',800);
+
+
+
+PROCEDURE
+
+DELIMITER //
+
+CREATE PROCEDURE customer_details(
+    IN cname VARCHAR(50)
+)
+
+BEGIN
+
+SELECT *
+FROM customer
+WHERE name = cname;
+
+END //
+
+DELIMITER ;
+
+
+OUTPUT
+
+mysql> CALL customer_details('Rahul');
++-------------+-------+----------+---------+
+| customer_id | name  | city     | credits |
++-------------+-------+----------+---------+
+|           2 | Rahul | Kottayam |    3000 |
++-------------+-------+----------+---------+
+

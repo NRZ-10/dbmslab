@@ -1,0 +1,76 @@
+SQL
+CREATE TABLE account(
+    account_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    balance INT
+);
+
+INSERT INTO account VALUES(101,5000);
+INSERT INTO account VALUES(102,2000);
+INSERT INTO account VALUES(103,1200);
+
+DELIMITER //
+
+CREATE PROCEDURE withdraw_amount(
+    IN acc_id INT,
+    IN amount INT
+)
+
+PROCEDURE
+
+DELIMITER //
+
+CREATE PROCEDURE withdraw_amount(
+    IN acc_id INT,
+    IN amt INT
+)
+
+BEGIN
+    DECLARE bal INT;
+
+    SELECT balance INTO bal 
+    FROM Account 
+    WHERE account_id = acc_id;
+
+    IF bal IS NULL THEN
+        SELECT 'Account does not exist' AS Message;
+
+    ELSEIF (bal - amt) < 1000 THEN
+        SELECT 'Withdrawal not allowed. Minimum balance must be 1000' AS Message;
+
+    ELSE
+        UPDATE Account
+        SET balance = balance - amt
+        WHERE account_id = acc_id;
+
+        SELECT 'Withdrawal successful' AS Message;
+    END IF;
+
+END //
+
+DELIMITER ;
+
+
+OUTPUT
+
+mysql> CALL withdraw_amount(101,2000);
++-----------------------+
+| Message               |
++-----------------------+
+| Withdrawal successful |
++-----------------------+
+
+mysql> CALL withdraw_amount(105,2000);
++------------------------+
+| Message                |
++------------------------+
+| Account does not exist |
++------------------------+
+
+mysql> CALL withdraw_amount(102,10000);
++------------------------------------------------------+
+| Message                                              |
++------------------------------------------------------+
+| Withdrawal not allowed. Minimum balance must be 1000 |
++------------------------------------------------------+
+
