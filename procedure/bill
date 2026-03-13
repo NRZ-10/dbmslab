@@ -1,0 +1,55 @@
+SQL
+
+create table Bill(customer_id int primary key, name varchar(50), pre_reading int,cur_reading int,unit int,amount decimal(10,2));
+
+INSERT INTO Bill VALUES (1,'Arun',100,180,NULL,NULL),(2,'Rahul',200,320,NULL,NULL),(3,'Meera',150,240,NULL,NULL),(4,'Anu',300,450,NULL,NULL);
+
+PROCEDURE
+
+DELIMITER $$
+
+CREATE PROCEDURE calculate_bill()
+BEGIN
+
+-- calculate units
+UPDATE Bill
+SET unit = cur_reading - pre_reading;
+
+-- up to 100 units
+UPDATE Bill
+SET amount = unit * 2
+WHERE unit <= 100;
+
+-- 101 to 200 units
+UPDATE Bill
+SET amount = (100*2) + (unit-100)*2.5
+WHERE unit > 100 AND unit <= 200;
+
+-- 201 to 300 units
+UPDATE Bill
+SET amount = (100*2) + (100*2.5) + (unit-200)*3
+WHERE unit > 200 AND unit <= 300;
+
+-- above 300 units
+UPDATE Bill
+SET amount = (100*2) + (100*2.5) + (100*3) + (unit-300)*4
+WHERE unit > 300;
+
+END $$
+
+DELIMITER ;
+
+OUTPUT
+
+CALL calculate_bill();
+
+SELECT * FROM Bill;
++-------------+-------+-------------+-------------+------+--------+
+| customer_id | name  | pre_reading | cur_reading | unit | amount |
++-------------+-------+-------------+-------------+------+--------+
+|           1 | Arun  |         100 |         180 |   80 | 160.00 |
+|           2 | Rahul |         200 |         320 |  120 | 250.00 |
+|           3 | Meera |         150 |         240 |   90 | 180.00 |
+|           4 | Anu   |         300 |         450 |  150 | 325.00 |
++-------------+-------+-------------+-------------+------+--------+
+
