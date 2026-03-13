@@ -1,0 +1,32 @@
+SQL
+
+create table employee(emp_id int primary key,emp_name varchar(50),department varchar(50));
+
+PROCEDURE
+
+DELIMITER //
+
+CREATE FUNCTION emp_count(e_name VARCHAR(50))
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*) INTO total
+    FROM employee
+    WHERE emp_name = e_name;
+
+    RETURN total;
+END //
+
+DELIMITER ;
+
+OUTPUT
+
+->select emp_count('Ravi');
++-------------------+
+| emp_count('Ravi') |
++-------------------+
+|                 2 |
++-------------------+
+
