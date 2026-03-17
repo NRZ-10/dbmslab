@@ -1,0 +1,72 @@
+SQL
+CREATE TABLE Emp_salary(
+    -> emp_id INT,
+    -> emp_name VARCHAR(50),
+    -> no_of_working_days INT,
+    -> designation VARCHAR(50),
+    -> salary DOUBLE);
+
+INSERT INTO Emp_salary VALUES (1,'Arun',20,'Assistant Professor',0),(2,'Rahul',22,'Clerk',0),(3,'Meera',25,'Programmer',0);
+
+PROCEDURE
+
+DELIMITER $$
+
+CREATE PROCEDURE calculate_salary()
+BEGIN
+
+    DECLARE done INT DEFAULT 0;
+    DECLARE v_emp_id INT;
+    DECLARE v_days INT;
+    DECLARE v_designation VARCHAR(50);
+    DECLARE v_salary DOUBLE;
+
+    DECLARE emp_cursor CURSOR FOR
+        SELECT emp_id, no_of_working_days, designation FROM Emp_salary;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN emp_cursor;
+
+    read_loop: LOOP
+        FETCH emp_cursor INTO v_emp_id, v_days, v_designation;
+
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF v_designation = 'Assistant Professor' THEN
+            SET v_salary = v_days * 1750;
+        ELSEIF v_designation = 'Clerk' THEN
+            SET v_salary = v_days * 750;
+        ELSEIF v_designation = 'Programmer' THEN
+            SET v_salary = v_days * 1250;
+        ELSE 
+            SET v_salary = 0;
+        END IF;
+
+        UPDATE Emp_salary
+        SET salary = v_salary
+        WHERE emp_id = v_emp_id;
+
+    END LOOP;
+
+    CLOSE emp_cursor;
+
+END$$
+
+DELIMITER ;
+
+OUTPUT
+
+CALL calculate_salary();
+
+SELECT * FROM Emp_salary;
++--------+----------+--------------------+---------------------+--------+
+| emp_id | emp_name | no_of_working_days | designation         | salary |
++--------+----------+--------------------+---------------------+--------+
+|      1 | Arun     |                 20 | Assistant Professor |  35000 |
+|      2 | Rahul    |                 22 | Clerk               |  16500 |
+|      3 | Meera    |                 25 | Programmer          |  31250 |
++--------+----------+--------------------+---------------------+--------+
+
