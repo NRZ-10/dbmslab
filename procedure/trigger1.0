@@ -1,0 +1,50 @@
+SQL 
+
+CREATE TABLE Employee (emp_id INT PRIMARY KEY,name VARCHAR(50),salary DECIMAL(10,2),department VARCHAR(50));
+Query OK, 0 rows affected (0.02 sec)
+
+CREATE TABLE Emp_history (emp_id INT,name VARCHAR(50),salary DECIMAL(10,2),department VARCHAR(50),Date_of_deletion DATETIME);
+Query OK, 0 rows affected (0.01 sec)
+
+INSERT INTO Employee VALUES (1, 'Asha', 25000, 'HR'),(2, 'Rahul', 30000, 'IT'),(3, 'Meena', 28000, 'Finance');
+Query OK, 3 rows affected (0.00 sec)
+
+CODE
+
+DELIMITER $$
+
+CREATE TRIGGER trg_after_delete_employee
+AFTER DELETE ON Employee
+FOR EACH ROW
+BEGIN
+    INSERT INTO Emp_history
+    (emp_id, name, salary, department, Date_of_deletion)
+    VALUES
+    (OLD.emp_id, OLD.name, OLD.salary, OLD.department, NOW());
+END$$
+
+DELIMITER ;
+
+OUTPUT
+
+mysql> select * from Employee;
++--------+-------+----------+------------+
+| emp_id | name  | salary   | department |
++--------+-------+----------+------------+
+|      1 | Asha  | 25000.00 | HR         |
+|      2 | Rahul | 30000.00 | IT         |
+|      3 | Meena | 28000.00 | Finance    |
++--------+-------+----------+------------+
+3 rows in set (0.00 sec)
+
+mysql> DELETE FROM Employee WHERE emp_id = 1;
+Query OK, 1 row affected (0.01 sec)
+
+SELECT * FROM Emp_history;
++--------+------+----------+------------+---------------------+
+| emp_id | name | salary   | department | Date_of_deletion    |
++--------+------+----------+------------+---------------------+
+|      1 | Asha | 25000.00 | HR         | 2026-03-24 14:41:08 |
++--------+------+----------+------------+---------------------+
+1 row in set (0.00 sec)
+
