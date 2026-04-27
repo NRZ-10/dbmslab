@@ -1,0 +1,27 @@
+DELIMITER //
+
+CREATE PROCEDURE GetMembershipByID(
+    IN cid INT,
+    OUT membership VARCHAR(20)
+)
+BEGIN
+    DECLARE ccredits INT;
+
+    SELECT credits INTO ccredits
+    FROM Customer
+    WHERE customer_id = cid;
+
+    IF ccredits > 5000 THEN
+        SET membership = 'Platinum';
+        
+    ELSEIF ccredits >= 1000 THEN
+        SET membership = 'Gold';
+        
+    ELSE
+        SET membership = 'Silver';
+        
+    END IF;
+END //
+
+DELIMITER ;
+
